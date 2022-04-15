@@ -1,21 +1,16 @@
-var http = require("http");
-var fs = require("fs");
+var express = require("express");
+var path = require("path");
 
-const hostname = '127.0.0.1';
-const port = 3000;
+var routes = require("./routes");
 
-/* Create an HTTP server to handle responses */
-/* Use a File System to render the html page (index.html) in the server window */
+var app = express();
 
-fs.readFile('./index.html', function(err, html) {
-  if(err) {
-    throw err;
-  }
-  http.createServer(function(request,response) {
-    response.writeHeader(200, {"Content-Type": "text/html"});  
-    response.write(html);  
-    response.end();
-  }).listen(port, () => {
-    console.log(`Server running at localhost:${port}`);
-  });
+app.set("port", process.env.PORT || 3000);
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+
+app.use(routes);
+
+app.listen(app.get("port"), function(){
+  console.log("Server started on port "+app.get("port"));
 });
