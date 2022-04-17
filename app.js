@@ -1,11 +1,22 @@
-var express = require("express");
-var path = require("path");
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
 
-var routes = require("./routes");
+require("dotenv").config();
 
-var app = express();
+const routes = require("./routes");
 
-app.set("port", process.env.PORT || 3000);
+const PORT = process.env.PORT || 3000;
+const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true}));
+app.use(cors());
+
+const AuthRoutes = require('./routes.js');
+app.use('/api', cors(), AuthRoutes);
+
+app.set("port", PORT);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
