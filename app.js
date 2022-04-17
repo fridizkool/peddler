@@ -5,6 +5,7 @@ const path = require("path");
 require("dotenv").config();
 
 const routes = require("./routes");
+//const queries = require("./spotify_query");
 
 const PORT = process.env.PORT || 3000;
 const app = express();

@@ -1,11 +1,10 @@
 const express = require("express");
 const router = express.Router();
 
-const {variable} = require("./spotify_authorization");
+const {authorizeURL} = require("./spotify_authorization");
 
 router.get("/", function(req,res){
-    console.log(variable);
-    res.render("index", {url:variable});
+    res.render("index", {url:authorizeURL});
 });
 
 router.get("/home", function(req,res){

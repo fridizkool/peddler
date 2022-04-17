@@ -1,4 +1,3 @@
-const express = require("express");
 const SpotifyWebApi = require("spotify-web-api-node");
 
 var scopes = ['user-read-private', 'user-read-email'],
@@ -15,4 +14,5 @@ var spotifyApi = new SpotifyWebApi({
 // Create the authorization URL
 const authorizeURL = spotifyApi.createAuthorizeURL(scopes, state);
 
-exports.variable = authorizeURL;
+exports.authorizeURL = authorizeURL;
+exports.spotifyApi = spotifyApi;
