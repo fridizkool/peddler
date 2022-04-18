@@ -1,7 +1,11 @@
 <%- include('./_header'); -%>
 
-<body>
+<form id="selection" action="/recommend" method="POST">
     <% data.forEach(function(d) { %>
-        <a href="<%= d.href %>"> + <%= d.name %> + </a><br>
+        <div class="checkbox">
+            <label><input name="music" type="checkbox" value="<%=d.name%>">+ <%= d.name %> + <br></label>
+        </div>
+        <!---<a href="<%= d.href %>"> + <%= d.name %> + </a><br> --->
     <% }) %>
-</body>
+    <input type="submit">
+</form>

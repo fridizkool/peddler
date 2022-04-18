@@ -73,5 +73,8 @@ router.post("/submit", (req, res) => {
   );
 })
 
+router.post("/recommend", (req, res) => {
+  console.log(req.body.music)
+})
 
 module.exports = router;
