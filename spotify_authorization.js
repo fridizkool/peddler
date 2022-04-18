@@ -27,3 +27,4 @@ const authorizeURL = spotifyApi.createAuthorizeURL(dataMap.scopes, dataMap.state
 
 exports.authorizeURL = authorizeURL;
 exports.spotifyApi = spotifyApi;
+exports.scopes = dataMap.scopes;
