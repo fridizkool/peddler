@@ -83,9 +83,6 @@ router.post("/recommend", (req, res) => {
     console.log("No Songs Selected!");
   }
   else {
-    console.log(songs.length);
-    console.log(artist);
-    //console.log(songs);
     recFunctions.songRec(artist, songs);
   }
 })
