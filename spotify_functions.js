@@ -1,25 +1,11 @@
-const express = require("express");
-//const { spotifyApi, secrets } = require("./spotify_authorization");
-
 /*
-const getToken = async () => {
-    const result = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + (Buffer.from(secrets.clientId + ':' + secrets.clientSecret).toString('base64'))
-        },
-        body: 'grant_type=client_credentials'
-    });
+const { spotifyApi } = require("./spotify_functions.js");
 
-    const data = await result.json();
-    return data.access_token;
+function setTokens(access, refresh) {
+    spotifyApi.setAccessToken
 }
-*/
 
-//spotifyApi.setAccessToken(getToken);
-
-async function findArtist(spotifyApi, artist) {
+async function findArtist(artist) {
     try {
         await spotifyApi
             .searchArtists(artist)
@@ -48,3 +34,4 @@ async function getDiscography(options) {
 };
 
 exports.findArtist = findArtist;
+*/

@@ -1,12 +1,15 @@
+// dependencies
 require("dotenv").config();
 const SpotifyWebApi = require("spotify-web-api-node");
+const axios = require('axios');
+const qs = require('qs');
 
+// secrets map
 const dataMap = {
     clientId:           process.env.CLIENT_ID,
     clientSecret:       process.env.CLIENT_SECRET,
     redirectUri:        process.env.REDIRECTURI,
     clientRedirectUri:  process.env.CLIENT_REDIRECTURI,
-    //accessToken:        process.env.ACCESS_TOKEN,
     state:              'default',
     scopes:             ['ugc-image-upload', 'user-modify-playback-state', 'user-read-playback-state',
                          'user-read-currently-playing', 'user-follow-modify', 'user-follow-read',
@@ -26,7 +29,42 @@ let spotifyApi = new SpotifyWebApi({
 // Create the authorization URL
 const authorizeURL = spotifyApi.createAuthorizeURL(dataMap.scopes, dataMap.state);
 
+const getToken = async (authCode) => {
+    try {
+        const token = Buffer.from(`${dataMap.clientId}:${dataMap.clientSecret}`, 'utf-8').toString('base64');
+        const data = qs.stringify({
+            grant_type: 'authorization_code',
+            code: authCode,
+            redirect_uri: dataMap.redirectUri
+        });
+        return await axios.post('https://accounts.spotify.com/api/token', data, {
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded',
+                Authorization: `Basic ${token}`
+            }
+        });
+    } catch(err) { console.error(err); }
+}
+
+const refreshToken = async (authCode) => {
+    try {
+        const token = Buffer.from(`${dataMap.clientId}:${dataMap.clientSecret}`, 'utf-8').toString('base64');
+        const data = qs.stringify({
+            grant_type: 'refresh_token',
+            refresh_token: authCode
+        });
+        return await axios.post('https://accounts.spotify.com/api/token', data, {
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded',
+                Authorization: `Basic ${token}`
+            }
+        });
+    } catch(err) { console.error(err); }
+}
+
 exports.authorizeURL = authorizeURL;
 exports.spotifyApi = spotifyApi;
 exports.scopes = dataMap.scopes;
 exports.secrets = dataMap;
+exports.getToken = getToken;
+exports.refreshToken = refreshToken;
