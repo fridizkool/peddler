@@ -61,8 +61,17 @@ router.get("/query", function(req,res){
     res.render("findsongs");
 });
 
-var {search} = require("./spotify_query");
 router.post("/submit", (req, res) => {
-  search("Love", []);
+  spotifyApi.searchTracks('artist:'+req.body.artist).then(
+    function(data) {
+      var info = data.body.tracks.items;
+      res.render("songs", {data: info});
+    },
+    function(err) {
+      console.log('Something went wrong!', err);
+    }
+  );
 })
+
+
 module.exports = router;

@@ -4,15 +4,18 @@ const {spotifyApi, authorizeURL} = require("./spotify_authorization");
 
 function search(artist = null, genre = [])
 {
-  console.log(authorizeURL);
+  var info = "";
+  //console.log(authorizeURL);
   spotifyApi.searchTracks('artist:'+artist).then(
       function(data) {
-        console.log(data.body);
+        info = data.body.tracks.items;
+        console.log(info);
       },
       function(err) {
         console.log('Something went wrong!', err);
       }
     );
+    return info;
 }
 
 exports.search = search;
