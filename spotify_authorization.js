@@ -6,7 +6,7 @@ const dataMap = {
     clientSecret:       process.env.CLIENT_SECRET,
     redirectUri:        process.env.REDIRECTURI,
     clientRedirectUri:  process.env.CLIENT_REDIRECTURI,
-    accessToken:        process.env.ACCESS_TOKEN,
+    //accessToken:        process.env.ACCESS_TOKEN,
     state:              'default',
     scopes:             ['ugc-image-upload', 'user-modify-playback-state', 'user-read-playback-state',
                          'user-read-currently-playing', 'user-follow-modify', 'user-follow-read',
@@ -23,24 +23,10 @@ let spotifyApi = new SpotifyWebApi({
     redirectUri:    dataMap.redirectUri
 });
 
-/*
-spotifyApi
-    .authorizationCodeGrant(dataMap.accessToken)
-    .then(data => {
-        spotifyApi.setAccessToken(data.body['access_token']);
-        spotifyApi.setRefreshToken(data.body['refresh_token']);
-    });
-
-spotifyApi
-    .refreshAccessToken()
-    .then(data => {
-        spotifyApi.setAccessToken(data.body['access_token']);
-    });
-*/
-
 // Create the authorization URL
 const authorizeURL = spotifyApi.createAuthorizeURL(dataMap.scopes, dataMap.state);
 
 exports.authorizeURL = authorizeURL;
 exports.spotifyApi = spotifyApi;
 exports.scopes = dataMap.scopes;
+exports.secrets = dataMap;

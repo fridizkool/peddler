@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const {authorizeURL, spotifyApi, scopes} = require("./spotify_authorization");
+const { authorizeURL, spotifyApi, scopes } = require("./spotify_authorization");
 
 router.get("/", function(req,res){
     res.render("index", {url:authorizeURL});
@@ -29,6 +29,21 @@ router.post("/submit", (req, res) => {
 })
 
 router.get('/callback', (req, res) => {
+    const { code } = req.query;
+    console.log(code);
+    try {
+        let data = await.spotifyApi.authorizationCodeGrant(code);
+        const { access_token, refresh_token } = data.body;
+        spotifyApi.setAccessToken(access_token);
+        spotifyApi.setRefreshToken(refresh_token);
+
+        res.redirect('http://localhost:3000/home');
+    } catch(err) { res.redirect('/#/error/invalid token'); }
+});
+
+module.exports = router;
+
+    /*
     const error = req.query.error;
     const code = req.query.code;
     const state = req.query.state;
@@ -71,5 +86,4 @@ router.get('/callback', (req, res) => {
         res.send(`Error getting Tokens: ${error}`);
       });
   });
-
-module.exports = router;
+*/
