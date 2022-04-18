@@ -28,7 +28,7 @@ var scopes = [
 // Setting credentials can be done in the wrapper's constructor, or using the API object's setters.
 var spotifyApi = new SpotifyWebApi({
   redirectUri: redirectUri,
-  clientId: clientId,
+  clientId: clientId
 });
 
 // Create the authorization URL
@@ -36,3 +36,4 @@ const authorizeURL = spotifyApi.createAuthorizeURL(scopes, state);
 
 exports.authorizeURL = authorizeURL;
 exports.spotifyApi = spotifyApi;
+exports.scopes = scopes;
