@@ -1,11 +1,12 @@
 <%- include('./_header'); -%>
 
 <form id="selection" action="/recommend" method="POST">
+    <label><h2 name="artist" value="<%=artist%>">Select Songs by <%=artist%>:</h2></label>
     <% data.forEach(function(d) { %>
         <div class="checkbox">
-            <label><input name="music" type="checkbox" value="<%=d.name%>">+ <%= d.name %> + <br></label>
+            <label><input name="music" type="checkbox" value="<%=d.name%>"><%= d.name %><br></label>
         </div>
         <!---<a href="<%= d.href %>"> + <%= d.name %> + </a><br> --->
     <% }) %>
-    <input type="submit">
+    <input type="submit" value="Generate Playlist">
 </form>

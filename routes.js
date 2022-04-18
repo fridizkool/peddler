@@ -3,6 +3,7 @@ const router = express.Router();
 const spotFunctions = require("./spotify_functions");
 
 const {authorizeURL, spotifyApi, scopes} = require("./spotify_authorization");
+const recFunctions = require("./recommend_functions");
 
 router.get("/", function(req,res){
     res.render("index", {url:authorizeURL});
@@ -63,11 +64,11 @@ router.get("/query", function(req,res){
 });
 
 router.post("/submit", (req, res) => {
-  spotFunctions.findArtist(req.body.artist);
   spotifyApi.searchTracks('artist:'+req.body.artist).then(
     function(data) {
+      var artist = req.body.artist;
       var info = data.body.tracks.items;
-      res.render("songs", {data: info});
+      res.render("songs", {artist: artist, data: info});
     },
     function(err) {
       console.log('Something went wrong!', err);
@@ -76,7 +77,17 @@ router.post("/submit", (req, res) => {
 })
 
 router.post("/recommend", (req, res) => {
-  console.log(req.body.music)
+  var artist = req.body.artist;
+  var songs = req.body.music;
+  if(typeof songs == 'undefined') {
+    console.log("No Songs Selected!");
+  }
+  else {
+    console.log(songs.length);
+    console.log(artist);
+    //console.log(songs);
+    recFunctions.songRec(artist, songs);
+  }
 })
 
 module.exports = router;
