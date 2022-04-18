@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const spotFunctions = require("./spotify_functions");
 
 const {authorizeURL, spotifyApi, scopes} = require("./spotify_authorization");
 
@@ -62,6 +63,7 @@ router.get("/query", function(req,res){
 });
 
 router.post("/submit", (req, res) => {
+  spotFunctions.findArtist(req.body.artist);
   spotifyApi.searchTracks('artist:'+req.body.artist).then(
     function(data) {
       var info = data.body.tracks.items;

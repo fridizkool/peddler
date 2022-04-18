@@ -29,4 +29,4 @@ async function getDiscography(options) {
 
 };
 
-exports.findArtist = findArtist;
+module.exports = {findArtist};
