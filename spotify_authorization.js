@@ -33,12 +33,15 @@ const authorizeURL = spotifyApi.createAuthorizeURL(dataMap.scopes, dataMap.state
 // retrieve access token
 const getToken = async (authCode) => {
     try {
+        // setup request for api... PITA
         const token = Buffer.from(`${dataMap.clientId}:${dataMap.clientSecret}`, 'utf-8').toString('base64');
         const data = qs.stringify({
             grant_type: 'authorization_code',
             code: authCode,
             redirect_uri: dataMap.redirectUri
         });
+
+        // send POST to api (asynchronous)
         return await axios.post('https://accounts.spotify.com/api/token', data, {
             headers: {
                 'content-type': 'application/x-www-form-urlencoded',
@@ -51,11 +54,14 @@ const getToken = async (authCode) => {
 // refresh access token
 const refreshToken = async (authCode) => {
     try {
+        // setup request for api... PITA
         const token = Buffer.from(`${dataMap.clientId}:${dataMap.clientSecret}`, 'utf-8').toString('base64');
         const data = qs.stringify({
             grant_type: 'refresh_token',
             refresh_token: authCode
         });
+
+        // send POST to api (asynchronous)
         return await axios.post('https://accounts.spotify.com/api/token', data, {
             headers: {
                 'content-type': 'application/x-www-form-urlencoded',
