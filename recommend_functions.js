@@ -1,3 +1,4 @@
+const { resolveInclude } = require("ejs");
 const express = require("express");
 const { spotifyApi } = require("./spotify_authorization");
 
@@ -5,34 +6,38 @@ async function songRec(artist, songs) {
     findArtist(artist, function(response){
         var artistId = response.id;
         similarArtists(artistId, function(artistList) {
-            preliminaryList(artistList, function(songList) {
-                console.log(songList);
-            });
+            var songList = await preliminaryList(artistList)
+            console.log(songList);
         });
     });
 };
 
-async function preliminaryList(similarArtists, callback) {
+const preliminaryList = function(similarArtists) {
     var songList = [];
     similarArtists.forEach(function(item) {
         var currentGenres = item.genres;
-        spotifyApi.getArtistTopTracks(item.id, 'GB')
-        .then(function(data) {
-            data.body.tracks.forEach(function(item) {
-                songList.push({
+        getTopSongs(item.id, function(topTracks) {
+            topTracks.forEach(function(item) {
+                const song = {
                     id: item.id, 
                     name: item.name, 
                     genres: currentGenres, 
-                    popularity: item.popularity});
-                return callback(songList);
-            });
-        }, function(err) {
-            console.log('Something went wrong!', err);
-        });
-        return callback(songList);
-    })
-    return callback(songList);
+                    popularity: item.popularity}
+                songList.push(song);
+            }
+        )});
+    });
+    return songList;
 };
+
+function getTopSongs(artist, callback) {
+    spotifyApi.getArtistTopTracks(artist, 'GB')
+    .then(function(data) {
+        return callback(data.body.tracks);
+    }, function(err) {
+        console.log('Something went wrong!', err);
+    });
+}
 
 /*async function preliminaryList(similarArtists, callback) {
     var songList = [];
