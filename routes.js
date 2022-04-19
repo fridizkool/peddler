@@ -1,90 +1,90 @@
+// dependencies
 const express = require("express");
 const router = express.Router();
-const spotFunctions = require("./spotify_functions");
+const { authorizeURL, spotifyApi, scopes, getToken, refreshToken } = require("./spotify_authorization");
 
-const {authorizeURL, spotifyApi, scopes} = require("./spotify_authorization");
-const recFunctions = require("./recommend_functions");
-
-router.get("/", function(req,res){
-    res.render("index", {url:authorizeURL});
+router.get("/", (req, res) => {
+    res.render("index", { url: authorizeURL });
 });
 
-router.get("/home", function(req,res){
+router.get("/home", (req, res) => {
     res.render("home");
 });
 
-router.get("/home/logged", function(req,res){
-    const error = req.query.error;
-    const code = req.query.code;
-    const state = req.query.state;
-  
-    if (error) {
-      console.error('Callback Error:', error);
-    }
-    else{
-      spotifyApi
-        .authorizationCodeGrant(code)
-        .then(data => {
-          const access_token = data.body['access_token'];
-          const refresh_token = data.body['refresh_token'];
-          const expires_in = data.body['expires_in'];
-    
-          spotifyApi.setAccessToken(access_token);
-          spotifyApi.setRefreshToken(refresh_token);
-    
-          console.log('access_token:', access_token);
-          console.log('refresh_token:', refresh_token);
-    
-          console.log(
-            `Sucessfully retreived access token. Expires in ${expires_in} s.`
-          );
-    
-          setInterval(async () => {
-            const data = await spotifyApi.refreshAccessToken();
-            const access_token = data.body['access_token'];
-    
-            console.log('The access token has been refreshed!');
-            console.log('access_token:', access_token);
-            spotifyApi.setAccessToken(access_token);
-          }, expires_in / 2 * 1000);
-        })
-        .catch(error => {
-          console.error('Error getting Tokens:', error);
-        });
-      }
-    res.render("home");
-});
-
-router.get('/login', (req, res) => {
-    res.redirect(spotifyApi.createAuthorizeURL(scopes));
-  });
-
-router.get("/query", function(req,res){
+router.get("/query", (req, res) => {
     res.render("findsongs");
 });
 
-router.post("/submit", (req, res) => {
-  spotifyApi.searchTracks('artist:'+req.body.artist).then(
-    function(data) {
-      var artist = req.body.artist;
-      var info = data.body.tracks.items;
-      res.render("songs", {artist: artist, data: info});
-    },
-    function(err) {
-      console.log('Something went wrong!', err);
-    }
-  );
-})
-
 router.post("/recommend", (req, res) => {
-  var artist = req.body.artist;
-  var songs = req.body.music;
-  if(typeof songs == 'undefined') {
-    console.log("No Songs Selected!");
-  }
-  else {
-    recFunctions.songRec(artist, songs);
-  }
-})
+    console.log(req.body.music)
+});
 
+// get login authorization from api
+router.get('/login', (req, res) => {
+      res.redirect(spotifyApi.createAuthorizeURL(scopes));
+});
+
+// handle callback from api; authenticate
+router.get("/callback", async (req, res) => {
+    // get code from query
+    const code = req.query.code || null;
+
+    // request a token
+    const response = await getToken(code);
+    
+    // handle response; on success, set tokens
+    if(response.status === 200) {
+        spotifyApi.setAccessToken(response.data.access_token);
+        spotifyApi.setRefreshToken(response.data.refresh_token);
+        res.render("findsongs");
+    }
+    else res.send(response);
+    // Debug string for api response
+    // res.send(`<pre>${JSON.stringify(response.data, null, 2)}</pre>`);
+});
+
+// refresh token (POST api); not used yet
+router.get("/refresh_token", async (req, res) => {
+    // get code from query
+    const { refresh_token } = req.query;
+
+    //request a token
+    const response = await refreshToken(refresh_token);
+    
+    // handle response; on success, set token
+    if(response.status === 200)
+        spotifyApi.setAccessToken(response.data.access_token);
+    else 
+        res.send(response);
+});
+
+// event listener for button in query.js; search functionality
+router.post("/submit", async (req, res) => {
+    // example query layout... need to modify variable names in findsongs.ejs
+    if(req.body.artist != null) {
+        spotifyApi.searchArtists(req.body.artist)
+            .then(
+                data => {
+                    // future improvement: replace artist with generic
+                    res.render("songs", { artist: req.body.artist, data: data.body.artists.items })
+                }, 
+                err => { console.error(err); }
+            );
+    }
+
+    // kinda janky not sure why
+    if(req.body.genre != null) {
+        spotifyApi.getCategories(req.body.genre)
+            .then(
+                data => {
+                    // future improvement: replace artist with generic
+                    res.render("songs", { artist: req.body.genre, data: data.body.categories.items });
+                }, 
+                err => { console.error(err); }
+            );
+    }
+    
+});
+
+// exports
 module.exports = router;
