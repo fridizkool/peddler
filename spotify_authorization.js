@@ -6,6 +6,7 @@ const qs = require('qs');
 
 // secrets map
 const dataMap = {
+    port:               process.env.PORT,
     clientId:           process.env.CLIENT_ID,
     clientSecret:       process.env.CLIENT_SECRET,
     redirectUri:        process.env.REDIRECTURI,
@@ -19,14 +20,14 @@ const dataMap = {
                          'user-read-private', 'user-library-modify', 'user-library-read']
 };
 
-// Setting credentials can be done in the wrapper's constructor, or using the API object's setters.
+// set credentials for api
 let spotifyApi = new SpotifyWebApi({
     clientId:       dataMap.clientId,
     clientSecret:   dataMap.clientSecret,
     redirectUri:    dataMap.redirectUri
 });
 
-// Create the authorization URL
+// authorization url
 const authorizeURL = spotifyApi.createAuthorizeURL(dataMap.scopes, dataMap.state);
 
 // retrieve access token
@@ -64,6 +65,7 @@ const refreshToken = async (authCode) => {
     } catch(err) { console.error(err); }
 }
 
+// exports
 exports.authorizeURL = authorizeURL;
 exports.spotifyApi = spotifyApi;
 exports.scopes = dataMap.scopes;
