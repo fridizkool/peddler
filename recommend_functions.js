@@ -19,15 +19,25 @@ async function preliminaryList(similarArtists, callback) {
         spotifyApi.getArtistTopTracks(item.id, 'GB')
         .then(function(data) {
             data.body.tracks.forEach(function(item) {
-                var song = {id: item.id, name: item.name, genres: currentGenres, popularity: item.popularity};
-                songList.push(song);
+                songList.push({
+                    id: item.id, 
+                    name: item.name, 
+                    genres: currentGenres, 
+                    popularity: item.popularity});
+                return callback(songList);
             });
         }, function(err) {
             console.log('Something went wrong!', err);
         });
-    });
+        return callback(songList);
+    })
     return callback(songList);
 };
+
+/*async function preliminaryList(similarArtists, callback) {
+    var songList = [];
+    similarArtists.forEach()
+}*/
 
 async function calcWeight(songList) {
     console.log(songList);
