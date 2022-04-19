@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const spotFunctions = require("./spotify_functions");
 const { authorizeURL, spotifyApi, scopes, getToken, refreshToken } = require("./spotify_authorization");
 
 router.get("/", (req, res) => {
@@ -43,16 +42,28 @@ router.get("/query", (req, res) => {
 
 router.post("/submit", async (req, res) => {
     //const token = await refreshToken(spotifyApi.getRefreshToken());
+ 
+    // example query layout... need to modify variable names in findsongs.ejs
+    if(req.body.artist != null) {
+        spotifyApi.searchArtists(req.body.artist)
+            .then(
+                data => {
+                    res.render("songs", { artist: req.body.artist, data: data.body.artists.items })
+                }, 
+                err => { console.error(err); }
+            );
+    }
 
-    console.log(req.body.artist);
-    console.log(JSON.stringify(req.body))
-    spotifyApi.searchTracks(req.body.artist)
-        .then(data => {
-            console.log('Search for ' + req.body.artist, data.body);
-        },
-        err => {
-            console.error(err);
-        });
+    // kinda janky not sure why
+    if(req.body.genre != null) {
+        spotifyApi.getCategories(req.body.genre)
+            .then(
+                data => {
+                    res.render("songs", { artist: req.body.genre, data: data.body.categories.items });
+                }, 
+                err => { console.error(err); }
+            );
+    }
     
 });
 

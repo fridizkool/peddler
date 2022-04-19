@@ -29,6 +29,7 @@ let spotifyApi = new SpotifyWebApi({
 // Create the authorization URL
 const authorizeURL = spotifyApi.createAuthorizeURL(dataMap.scopes, dataMap.state);
 
+// retrieve access token
 const getToken = async (authCode) => {
     try {
         const token = Buffer.from(`${dataMap.clientId}:${dataMap.clientSecret}`, 'utf-8').toString('base64');
@@ -46,6 +47,7 @@ const getToken = async (authCode) => {
     } catch(err) { console.error(err); }
 }
 
+// refresh access token
 const refreshToken = async (authCode) => {
     try {
         const token = Buffer.from(`${dataMap.clientId}:${dataMap.clientSecret}`, 'utf-8').toString('base64');
