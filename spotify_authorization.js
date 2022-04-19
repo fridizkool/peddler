@@ -21,7 +21,7 @@ const dataMap = {
 };
 
 // set credentials for api
-let spotifyApi = new SpotifyWebApi({
+const spotifyApi = new SpotifyWebApi({
     clientId:       dataMap.clientId,
     clientSecret:   dataMap.clientSecret,
     redirectUri:    dataMap.redirectUri
