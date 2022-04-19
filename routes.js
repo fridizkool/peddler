@@ -60,6 +60,7 @@ router.get("/refresh_token", async (req, res) => {
 
 // event listener for button in query.js; search functionality
 router.post("/submit", async (req, res) => {
+    /*
     // example query layout... need to modify variable names in findsongs.ejs
     if(req.body.artist != null) {
         spotifyApi.searchArtists(req.body.artist)
@@ -83,8 +84,31 @@ router.post("/submit", async (req, res) => {
                 err => { console.error(err); }
             );
     }
-    
+    */
+
+    spotifyApi.searchTracks('artist:'+req.body.artist)
+        .then(data => { 
+            var artist = req.body.artist;
+            var info = data.body.tracks.items;
+            res.render("songs", {artist: artist, data: info});
+        },
+        err => {
+            console.log('Something went wrong!', err);
+        }
+      );
 });
+    
+router.post("/recommend", (req, res) => {
+    var artist = req.body.artist;
+    var songs = req.body.music;
+    if(typeof songs == 'undefined') {
+        console.log("No Songs Selected!");
+    }
+    else {
+        recFunctions.songRec(artist, songs);
+    }
+});
+
 
 // exports
 module.exports = router;

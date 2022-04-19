@@ -3,34 +3,49 @@ const express = require("express");
 const { spotifyApi } = require("./spotify_authorization");
 
 async function songRec(artist, songs) {
-    findArtist(artist, function(response){
-        var artistId = response.id;
-        similarArtists(artistId, function(artistList) {
-            var songList = await preliminaryList(artistList)
-            console.log(songList);
+    console.log('here');
+    await findArtist(artist, async function(response){
+        let artistId = response.id;
+        await similarArtists(artistId, async function(artistList) {
+            let songList = await preliminaryList(artistList)
+            songList.forEach(e => {
+                console.log(e);
+            });
+            console.log(songList.length + ' ' + songList[0] + ' ' + songList[songList.length-1]);
         });
     });
 };
 
-const preliminaryList = function(similarArtists) {
-    var songList = [];
-    similarArtists.forEach(function(item) {
-        var currentGenres = item.genres;
-        getTopSongs(item.id, function(topTracks) {
-            topTracks.forEach(function(item) {
+const preliminaryList = async (similarArtists) => {
+    //let songList = [];
+
+    similarArtists.forEach(async function(item) {
+
+        let currentGenres = item.genres;
+        
+        const list = await getTopSongs(item.id, async function(topTracks) {
+            let songList = [];
+            topTracks.forEach(async function(item) {
+                
                 const song = {
                     id: item.id, 
                     name: item.name, 
                     genres: currentGenres, 
-                    popularity: item.popularity}
+                    popularity: item.popularity
+                }
+
+                //console.log(song);
                 songList.push(song);
-            }
-        )});
+                //console.log(songList[0]);
+
+            });
+            return songList;
+        });
     });
-    return songList;
+    console.log(list[0]);
 };
 
-function getTopSongs(artist, callback) {
+async function getTopSongs(artist, callback) {
     spotifyApi.getArtistTopTracks(artist, 'GB')
     .then(function(data) {
         return callback(data.body.tracks);
@@ -40,7 +55,7 @@ function getTopSongs(artist, callback) {
 }
 
 /*async function preliminaryList(similarArtists, callback) {
-    var songList = [];
+    let songList = [];
     similarArtists.forEach()
 }*/
 
