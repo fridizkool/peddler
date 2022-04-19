@@ -1,7 +1,9 @@
 <%- include('./_header'); -%>
 
 <form id="query" action="/submit" method="POST">
-    <label>Artist</label>
-    <input type="text" id="artist">
+    <label>Artist</label><br>
+    <input type="text" name="artist"><br>
+    <label>Genres (comma seperated "pop,rock,hardcore funk")</label><br>
+    <input type="text" name="genre"><br>
     <input type="submit">
 </form>
