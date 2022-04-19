@@ -42,81 +42,23 @@ router.get("/query", (req, res) => {
 });
 
 router.post("/submit", async (req, res) => {
-    // maybe refresh token here?
-    console.log(spotifyApi.getAccessToken());
-    console.log(spotifyApi.getRefreshToken());
-    const token = await refreshToken(spotifyApi.getRefreshToken());
-    if(token.status === 200){
-        console.log(token);
-        spotifyApi.setAccessToken(token.data.access_token);
-        console.log(spotifyApi.getAccessToken());
-        spotifyApi.getMe()
-            .then(function(data) {
-                console.log('Some information about the authenticated user', data.body);
-            }, function(err) {
-                console.log('Something went wrong!', err);
-            });
-    }
+    //const token = await refreshToken(spotifyApi.getRefreshToken());
 
-    
-
-    /*
-    spotifyApi.searchTracks('artist:' + req.body.artist)
+    console.log(req.body.artist);
+    console.log(JSON.stringify(req.body))
+    spotifyApi.searchTracks(req.body.artist)
         .then(data => {
             console.log('Search for ' + req.body.artist, data.body);
         },
         err => {
             console.error(err);
         });
-    */
+    
 });
 
 router.post("/recommend", (req, res) => {
   console.log(req.body.music)
 })
-
-// currently unused
-router.get("/home/logged", (req, res) => {
-    const error = req.query.error;
-    const code = req.query.code;
-    const state = req.query.state;
-  
-    if (error) {
-      console.error('Callback Error:', error);
-    }
-    else{
-      spotifyApi
-        .authorizationCodeGrant(code)
-        .then(data => {
-          const access_token = data.body['access_token'];
-          const refresh_token = data.body['refresh_token'];
-          const expires_in = data.body['expires_in'];
-    
-          spotifyApi.setAccessToken(access_token);
-          spotifyApi.setRefreshToken(refresh_token);
-    
-          console.log('access_token:', access_token);
-          console.log('refresh_token:', refresh_token);
-    
-          console.log(
-            `Sucessfully retreived access token. Expires in ${expires_in} s.`
-          );
-    
-          setInterval(async () => {
-            const data = await spotifyApi.refreshAccessToken();
-            const access_token = data.body['access_token'];
-    
-            console.log('The access token has been refreshed!');
-            console.log('access_token:', access_token);
-            spotifyApi.setAccessToken(access_token);
-          }, expires_in / 2 * 1000);
-        })
-        .catch(error => {
-          console.error('Error getting Tokens:', error);
-        });
-      }
-    res.render("home");
-});
 
 router.get('/login', (req, res) => {
     res.redirect(spotifyApi.createAuthorizeURL(scopes));
