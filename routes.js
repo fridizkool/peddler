@@ -15,14 +15,13 @@ router.get('/callback', async (req, res) => {
     const code = req.query.code || null;
 
     const response = await getToken(code);
-
+    
     if(response.status === 200) {
         spotifyApi.setAccessToken(response.data.access_token);
         spotifyApi.setRefreshToken(response.data.refresh_token);
         res.render("findsongs");
     }
     else res.send(response);
-
     // Debug string for api response
     // res.send(`<pre>${JSON.stringify(response.data, null, 2)}</pre>`);
 });
@@ -42,10 +41,24 @@ router.get("/query", (req, res) => {
     res.render("findsongs");
 });
 
-router.post("/submit", (req, res) => {
+router.post("/submit", async (req, res) => {
     // maybe refresh token here?
+    console.log(spotifyApi.getAccessToken());
+    console.log(spotifyApi.getRefreshToken());
+    const token = await refreshToken(spotifyApi.getRefreshToken());
+    if(token.status === 200){
+        console.log(token);
+        spotifyApi.setAccessToken(token.data.access_token);
+        console.log(spotifyApi.getAccessToken());
+        spotifyApi.getMe()
+            .then(function(data) {
+                console.log('Some information about the authenticated user', data.body);
+            }, function(err) {
+                console.log('Something went wrong!', err);
+            });
+    }
 
-    spotifyApi.getMe().then(data => { console.log(data.statusCode); });
+    
 
     /*
     spotifyApi.searchTracks('artist:' + req.body.artist)
