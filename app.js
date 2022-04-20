@@ -1,28 +1,27 @@
+// libraries
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-
-require("dotenv").config();
-
 const routes = require("./routes");
-//const queries = require("./spotify_query");
 
-const PORT = process.env.PORT || 3000;
+// object imports
+const authRoutes = require('./routes.js');
+const { spotifyApi, secrets } = require('./spotify_authorization.js');
 const app = express();
 
+// configure app
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 app.use(cors());
+app.use(routes);
+app.use('/api', cors(), authRoutes);
 
-const AuthRoutes = require('./routes.js');
-app.use('/api', cors(), AuthRoutes);
-
-app.set("port", PORT);
+// set values
+app.set("port", secrets.port);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-app.use(routes);
-
-app.listen(app.get("port"), function(){
-  console.log("Server started on port "+app.get("port"));
+// launch
+app.listen(app.get("port"), () => {
+  console.log("Server started on port " + app.get("port"));
 });

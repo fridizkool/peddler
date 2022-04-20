@@ -1,7 +1,12 @@
+// dependencies
 require("dotenv").config();
 const SpotifyWebApi = require("spotify-web-api-node");
+const axios = require('axios');
+const qs = require('qs');
 
+// secrets map
 const dataMap = {
+    port:               process.env.PORT,
     clientId:           process.env.CLIENT_ID,
     clientSecret:       process.env.CLIENT_SECRET,
     redirectUri:        process.env.REDIRECTURI,
@@ -15,16 +20,61 @@ const dataMap = {
                          'user-read-private', 'user-library-modify', 'user-library-read']
 };
 
-// Setting credentials can be done in the wrapper's constructor, or using the API object's setters.
+// set credentials for api
 let spotifyApi = new SpotifyWebApi({
     clientId:       dataMap.clientId,
     clientSecret:   dataMap.clientSecret,
     redirectUri:    dataMap.redirectUri
 });
 
-// Create the authorization URL
+// authorization url
 const authorizeURL = spotifyApi.createAuthorizeURL(dataMap.scopes, dataMap.state);
 
+// retrieve access token
+const getToken = async (authCode) => {
+    try {
+        // setup request for api... PITA
+        const token = Buffer.from(`${dataMap.clientId}:${dataMap.clientSecret}`, 'utf-8').toString('base64');
+        const data = qs.stringify({
+            grant_type: 'authorization_code',
+            code: authCode,
+            redirect_uri: dataMap.redirectUri
+        });
+
+        // send POST to api (asynchronous)
+        return await axios.post('https://accounts.spotify.com/api/token', data, {
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded',
+                Authorization: `Basic ${token}`
+            }
+        });
+    } catch(err) { console.error(err); }
+}
+
+// refresh access token
+const refreshToken = async (authCode) => {
+    try {
+        // setup request for api... PITA
+        const token = Buffer.from(`${dataMap.clientId}:${dataMap.clientSecret}`, 'utf-8').toString('base64');
+        const data = qs.stringify({
+            grant_type: 'refresh_token',
+            refresh_token: authCode
+        });
+
+        // send POST to api (asynchronous)
+        return await axios.post('https://accounts.spotify.com/api/token', data, {
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded',
+                Authorization: `Basic ${token}`
+            }
+        });
+    } catch(err) { console.error(err); }
+}
+
+// exports
 exports.authorizeURL = authorizeURL;
 exports.spotifyApi = spotifyApi;
 exports.scopes = dataMap.scopes;
+exports.secrets = dataMap;
+exports.getToken = getToken;
+exports.refreshToken = refreshToken;

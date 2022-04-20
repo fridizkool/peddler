@@ -18,7 +18,6 @@ async function songRec(artist, songs) {
             }
         }
     }
-    //console.log(songIds);
 
     //retrieve audio profile of user selected songs
     let songAnalyses = await audioProfile(songIds);
