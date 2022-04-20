@@ -17,10 +17,6 @@ router.get("/query", (req, res) => {
     res.render("findsongs");
 });
 
-router.post("/recommend", (req, res) => {
-    console.log(req.body.music)
-});
-
 // get login authorization from api
 router.get('/login', (req, res) => {
       res.redirect(spotifyApi.createAuthorizeURL(scopes));
@@ -87,7 +83,7 @@ router.post("/submit", async (req, res) => {
             );
     }
     */
-  });
+});
 
 router.post("/recommend", async(req, res) => {
   var artist = req.body.artist;
