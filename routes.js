@@ -76,14 +76,15 @@ router.post("/submit", (req, res) => {
   );
 })
 
-router.post("/recommend", (req, res) => {
+router.post("/recommend", async(req, res) => {
   var artist = req.body.artist;
   var songs = req.body.music;
   if(typeof songs == 'undefined') {
     console.log("No Songs Selected!");
   }
   else {
-    recFunctions.songRec(artist, songs);
+    let recList = await recFunctions.songRec(artist, songs);
+    res.render("rec_songs", {artist:artist, data:recList});
   }
 })
 

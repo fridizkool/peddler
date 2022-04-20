@@ -1,0 +1,9 @@
+<%- include('./_header'); -%>
+
+<form id="selection" action="/recommend" method="POST">
+    <label><h1>Recommended Songs:</h1></label><br>
+    <% data.forEach(function(d) { %>
+        <a name="music" href = "<%=d.preview_url%>" value="<%=d.name%>"><%= d.name %> by <%= d.artist%><br>
+        <!---<a href="<%= d.href %>"> + <%= d.name %> + </a><br> --->
+    <% }) %>
+</form>
