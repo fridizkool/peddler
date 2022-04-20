@@ -38,7 +38,7 @@ async function songRec(artist, songs) {
         valence: 0,
         tempo: 0
     }
-    //console.log(songAnalyses[0].danceability);
+    
     for (let i = 0; i < songAnalyses.length; i++) {
         masterProfile.danceability += songAnalyses[i].danceability;
         masterProfile.energy += songAnalyses[i].energy;
