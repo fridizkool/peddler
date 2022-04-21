@@ -5,6 +5,10 @@ const distance = require('euclidean-distance');
 
 async function songRec(artist, songs) {
 
+    if (typeof songs === "string") {
+        songs = [songs];
+    }
+
     //retrieves song ids for user selected music
     let songIds = [];
     for (let i = 0; i < songs.length; i++) {
