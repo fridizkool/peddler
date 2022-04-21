@@ -3,6 +3,8 @@ const express = require("express");
 const router = express.Router();
 const { authorizeURL, spotifyApi, scopes, getToken, refreshToken } = require("./spotify_authorization");
 
+const recFunctions = require("./recommend_functions");
+
 router.get("/", (req, res) => {
     res.render("index", { url: authorizeURL });
 });
@@ -13,10 +15,6 @@ router.get("/home", (req, res) => {
 
 router.get("/query", (req, res) => {
     res.render("findsongs");
-});
-
-router.post("/recommend", (req, res) => {
-    console.log(req.body.music)
 });
 
 // get login authorization from api
@@ -60,18 +58,19 @@ router.get("/refresh_token", async (req, res) => {
 
 // event listener for button in query.js; search functionality
 router.post("/submit", async (req, res) => {
+    
     // example query layout... need to modify variable names in findsongs.ejs
     if(req.body.artist != null) {
-        spotifyApi.searchArtists(req.body.artist)
+        spotifyApi.searchTracks('artist:' + req.body.artist)
             .then(
-                data => {
+                function(data) {
                     // future improvement: replace artist with generic
-                    res.render("songs", { artist: req.body.artist, data: data.body.artists.items })
+                    res.render("songs", { artist: req.body.artist, data: data.body.tracks.items })
                 }, 
-                err => { console.error(err); }
+                function(err) { console.error(err); }
             );
     }
-
+    /*
     // kinda janky not sure why
     if(req.body.genre != null) {
         spotifyApi.getCategories(req.body.genre)
@@ -83,8 +82,20 @@ router.post("/submit", async (req, res) => {
                 err => { console.error(err); }
             );
     }
-    
+    */
 });
+
+router.post("/recommend", async(req, res) => {
+  var artist = req.body.artist;
+  var songs = req.body.music;
+  if(typeof songs == 'undefined') {
+    console.log("No Songs Selected!");
+  }
+  else {
+    let recList = await recFunctions.songRec(artist, songs);
+    res.render("rec_songs", {artist:artist, data:recList});
+  }
+})
 
 // exports
 module.exports = router;
